@@ -2,6 +2,8 @@ package Project.MiniGames;
 
 import Project.GetInput;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class HangMan implements IMiniGame {
@@ -9,6 +11,9 @@ public class HangMan implements IMiniGame {
     private final ArrayList<Character> guesses;
     private final ArrayList<Character> hangman;
     private int numWrongGuesses;
+    Map<String, String> hangmanHints;
+
+
 
     public HangMan() {
         this.wordToGuess = randomWord();
@@ -18,10 +23,21 @@ public class HangMan implements IMiniGame {
         }
         this.hangman = new ArrayList<>();
         this.numWrongGuesses = 0;
+        hangmanHints = new HashMap<>();
+        hangmanHints.put("door", "A way in or out.");
+        hangmanHints.put("tablet", "Flat and often held in hand.");
+        hangmanHints.put("princess", "Royal, yet not crowned.");
+        hangmanHints.put("king", "Ruler by birthright.");
+        hangmanHints.put("solomon", "Known for wisdom.");
+        hangmanHints.put("zarathor", "A name shrouded in power.");
+        hangmanHints.put("dragon", "Scales and fire.");
+        hangmanHints.put("talen", "A name fit for a hero.");
+        hangmanHints.put("Amulet", "Worn for unseen protection.");
     }
 
     private String randomWord() {
         String[] words = {"door", "tablet", "princess", "king", "solomon", "zarathor", "dragon", "talen", "Amulet"};
+
         Random random = new Random();
         int index = random.nextInt(words.length);
         return words[index];
@@ -90,10 +106,24 @@ public class HangMan implements IMiniGame {
             }
 
             if (!found) {
+                printGuesses();
+                System.out.println();
                 System.out.println("Wrong!");
                 hangman.add('|');
-                System.out.println("Hangman: ");
+                System.out.print("\nHangman: ");
                 printHangman();
+
+                if(hangman.size() == 3 && numWrongGuesses == 2){
+                    System.out.print("\nDo you want hints?{y/n}: ");
+                    String i = String.valueOf(GetInput.getWordInput().charAt(0));
+                    if (i.equalsIgnoreCase("y")){
+                        System.out.print("\n Hint: ");
+                        System.out.print(hangmanHints.get(wordToGuess));
+                        System.out.println();
+                    }else {
+                        System.out.println("\nGood Luck!\n");
+                    }
+                }
                 numWrongGuesses++;
                 chances--;
             }
@@ -106,14 +136,11 @@ public class HangMan implements IMiniGame {
     public void gameRules() {
         System.out.println("\n\nThis game is Hangman!");
         System.out.println("A random word is chosen from the context of the game.\n");
-        System.out.println("you have (the length of the word) * 3 chances to guess the word fully!");
+        System.out.println("you have (the length of the word) * 3 = _" +  wordToGuess.length() * 3 + "_ chances to guess the word fully!");
     }
-
 
     public static void main(String[] args) {
         var h = new HangMan();
         h.playGame();
     }
-
-
 }
